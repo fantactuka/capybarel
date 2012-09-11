@@ -5,7 +5,7 @@ describe Capybarel do
 
   before do
     @map = {found_item: ".find-item", visible_item: ".visible-item", dynamic_item: ".dynamic-item", within_item: ".within-item", within_box: ".within-test", missed_item: ".missed-item"}
-    self.elements_map = @map
+    elements_map.set @map
   end
 
   describe "#elements map" do
@@ -14,12 +14,12 @@ describe Capybarel do
     end
 
     it "should reset map" do
-      reset_elements_map
+      elements_map.clear
       elements_map.should == {}
     end
 
     it "should append elements map" do
-      merge_elements_map(header: ".header")
+      elements_map << {header: ".header"}
       elements_map.should == @map.merge(header: ".header")
     end
 

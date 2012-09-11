@@ -5,10 +5,31 @@ module Capybarel
   class ElementSelectorNotFoundError < StandardError
   end
 
+  class ElementsMap < Hash
+    def set(hash)
+      clear
+      merge! hash
+    end
+
+    alias :<< :merge!
+  end
+
   module DSL
 
     include Capybara::DSL
 
+    ##
+    #
+    # Locate single or multiple element depending on passed params
+    # using elements_map selector
+    #
+    #     self.elements_map = { page: ".page", header: ".header", logo: ".logo a", nav_item: "ul.nav li" }
+    #
+    #     element :page                             => Capybara::Node::Element
+    #     element :nav_item, all: true              => [Array or Capybara::Node::Element]
+    #     elements :nav_item                        => [Array or Capybara::Node::Element]
+    #     elements :logo, within: :header
+    #
     def element(name, options={})
       options, search_options = extract_element_options(options)
       selector = "#{options[:append_selector]}#{element_selector_by_name(name)}#{options[:prepend_selector]}"
@@ -19,13 +40,14 @@ module Capybarel
       find_element_within(options[:within]) do
         wait_until { first(selector, search_options) } rescue nil
         elements = all(selector, search_options)
-        elements = elements.select {|e| e.visible? } if options[:visible]
+        elements = elements.select { |e| e.visible? } if options[:visible]
+        error = Capybara::ElementNotFound.new("unable to find any `#{selector}` #{options.inspect}")
 
         if options[:all]
-          raise Capybara::ElementNotFound, "unable to find any `#{selector}` #{options.inspect}" if elements.empty? && options[:greedy]
+          raise error if elements.empty? && options[:greedy]
           elements
         else
-          elements[options[:index]] or raise Capybara::ElementNotFound, "unable to find `#{selector}` #{options.inspect}"
+          elements[options[:index]] or raise error
         end
       end
     end
@@ -43,26 +65,13 @@ module Capybarel
 
     alias elements? element?
 
-    def element_selector_by_name(name)
-      elements_map[name] or raise ElementSelectorNotFoundError, "unable to find element selector for #{name}"
-    end
-
     def elements_map=(map)
       validate_elements_map! map
-      @_elements_map = map
+      @elements_map = map
     end
 
     def elements_map
-      @_elements_map ||= {}
-    end
-
-    def merge_elements_map(map)
-      validate_elements_map! map
-      @_elements_map.merge! map
-    end
-
-    def reset_elements_map
-      @_elements_map = {}
+      @elements_map ||= ElementsMap.new
     end
 
     def wait_then_click(&block)
@@ -76,11 +85,11 @@ module Capybarel
       result
     end
 
-    def screenshot
-      # TODO
+    private
+    def element_selector_by_name(name)
+      elements_map[name] or raise ElementSelectorNotFoundError, "unable to find element selector for #{name}"
     end
 
-    private
     def extract_element_options(options)
       default_options = {index: 0, all: false, within: nil, visible: true, greedy: false}
       except_keys = %w(all index greedy withing prepend_selector append_selector).map(&:to_sym)
