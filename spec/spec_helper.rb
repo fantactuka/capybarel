@@ -14,6 +14,7 @@ RSpec.configure do |r|
   r.include Capybara::RSpecMatchers
   r.include Capybara::Extension
   r.include Capybarel::RSpecHelpers
+  r.include Capybarel::DSL::All
 
   r.after :suite do
     Dir[File.join File.dirname(__FILE__), "../**/chromedriver.log"].each { |f| FileUtils.rm_rf(f) }

@@ -1,8 +1,6 @@
 require "spec_helper"
 
-describe Capybarel do
-  include Capybarel::DSL
-
+describe Capybarel:: do
   before do
     @map = {found_item: ".find-item", visible_item: ".visible-item", dynamic_item: ".dynamic-item", within_item: ".within-item", within_box: ".within-test", missed_item: ".missed-item"}
     elements_map.set @map
@@ -90,6 +88,5 @@ describe Capybarel do
       element?(:found_item).should be_true
       elements?(:found_item).should be_true
     end
-
   end
 end

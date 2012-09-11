@@ -1,7 +1,7 @@
 require "capybara/dsl"
-require "capybarel/dsl"
+require "capybarel/config"
 require "capybarel/version"
-
-module Capybarel
-
-end
+require "capybarel/dsl/elements"
+require "capybarel/dsl/javascript"
+require "capybarel/dsl/from_yaml"
+require "capybarel/dsl/all"
