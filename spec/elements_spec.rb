@@ -22,13 +22,17 @@ describe Capybarel::DSL::Elements do
     end
 
     it "should validate elements map" do
-      lambda { elements_map.set [] }.should raise_error(Capybarel::ElementsMapError)
+      lambda { elements_map.set [] }.should raise_error(TypeError)
     end
   end
 
   describe "#element" do
     before do
       visit_local path("support/index.html")
+    end
+
+    it "should raise error if wrong element name provided" do
+      -> { element(:invalid_element_key) }.should raise_error(Capybarel::ElementMapNotFoundError)
     end
 
     describe "one" do

@@ -71,7 +71,7 @@ module Capybarel
 
       private
       def element_selector_by_name(name)
-        elements_map[name] or raise ElementSelectorNotFoundError, "unable to find element selector for #{name}"
+        elements_map[name] or raise ElementMapNotFoundError, "unable to find element selector for #{name}"
       end
 
       def extract_element_options(options)
@@ -101,10 +101,7 @@ module Capybarel
     end
   end
 
-  class ElementsMapError < StandardError
-  end
-
-  class ElementSelectorNotFoundError < StandardError
+  class ElementMapNotFoundError < StandardError
   end
 
   class ElementsMap < Hash
@@ -116,7 +113,7 @@ module Capybarel
 
     private
     def validate_type!(object)
-      raise ElementsMapError, "elements_map should be hash" unless object.is_a? Hash
+      raise TypeError, "elements_map should be hash" unless object.is_a? Hash
     end
 
 
