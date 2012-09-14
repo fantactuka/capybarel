@@ -50,9 +50,8 @@ module Capybarel
 
       alias elements? element?
 
-      def elements_map=(map)
-        validate_elements_map! map
-        @elements_map = map
+      def elements_map=(hash)
+        raise "Use elements_map= is deprecated elements_map.set instead to assign it to #{hash}"
       end
 
       def elements_map
@@ -76,7 +75,7 @@ module Capybarel
       end
 
       def extract_element_options(options)
-        default_options = {index: 0, all: false, within: nil, visible: true, greedy: false}
+        default_options = {index: 0, all: false, within: nil, visible: true, greedy: true}
         except_keys = %w(all index greedy withing prepend_selector append_selector).map(&:to_sym)
         options = default_options.merge(options)
 
@@ -88,10 +87,6 @@ module Capybarel
           memo[k] = v unless exceptions
           memo
         end
-      end
-
-      def validate_elements_map!(map)
-        raise ElementsMapError, "elements_map should be hash" unless map.is_a? Hash
       end
 
       def find_element_within(within_selector=nil, &block)
@@ -114,9 +109,16 @@ module Capybarel
 
   class ElementsMap < Hash
     def set(hash)
+      validate_type!(hash)
       clear
       merge! hash
     end
+
+    private
+    def validate_type!(object)
+      raise ElementsMapError, "elements_map should be hash" unless object.is_a? Hash
+    end
+
 
     alias :<< :merge!
   end
