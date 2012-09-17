@@ -49,6 +49,10 @@ module Capybarel
       end
 
       alias elements? element?
+      alias has_element? element?
+      alias has_elements? element?
+      alias have_element? element?
+      alias have_elements? element?
 
       def elements_map=(hash)
         raise "Use elements_map= is deprecated elements_map.set instead to assign it to #{hash}"
