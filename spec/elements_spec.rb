@@ -24,6 +24,12 @@ describe Capybarel::DSL::Elements do
     it "should validate elements map" do
       lambda { elements_map.set [] }.should raise_error(TypeError)
     end
+
+    it "should symbolize passed keys" do
+      elements_map.set("header" => ".header")
+      elements_map["header"].should be_nil
+      elements_map[:header].should == ".header"
+    end
   end
 
   describe "#element" do

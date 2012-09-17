@@ -49,10 +49,6 @@ module Capybarel
       end
 
       alias elements? element?
-      alias has_element? element?
-      alias has_elements? element?
-      alias have_element? element?
-      alias have_elements? element?
 
       def elements_map=(hash)
         raise "Use elements_map= is deprecated elements_map.set instead to assign it to #{hash}"
@@ -112,10 +108,21 @@ module Capybarel
     def set(hash)
       validate_type!(hash)
       clear
-      merge! hash
+      merge!(hash)
+    end
+
+    def merge!(hash)
+      super symbolize_keys!(hash)
     end
 
     private
+    def symbolize_keys!(hash)
+      hash.inject({}) do |memo, (k, v)|
+        memo[k.to_sym] = v
+        memo
+      end
+    end
+
     def validate_type!(object)
       raise TypeError, "elements_map should be hash" unless object.is_a? Hash
     end
